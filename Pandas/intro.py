@@ -73,3 +73,47 @@
 # data.dropna(inplace=True)
 # print(data.to_string()) #removes rows with empty cells permanently
 
+#fillna() method
+# import pandas as pd
+# data=pd.read_csv("data.csv")
+# a=data.fillna(100,inplace=True)
+# # print(a.to_string()) #fills empty cells with specified value
+# print(a)
+
+#replacing using mean ,mode and median
+# import pandas as pd
+# a=pd.read_csv("data.csv")
+# b=a["calories"].mean()
+# a.fillna({"calories":b},inplace=True)
+
+#fromating date column
+# import pandas as pd
+# data=pd.read_csv("data.csv")
+# data["Date"]=pd.to_datetime(data["Date"],formate="mixed")
+# print(data)
+
+
+
+# import pandas as pd
+# a=pd.read_csv("data.csv")
+# a["Date"]=pd.to_datetime(a["Date"],formate="mixed")
+# print(a)
+
+#removing rempty columns in dataframe
+# import pandas as pd
+# a=pd.read_csv("data.csv")
+# a.dropna(subset=["Date"],inplace=True)
+
+
+#Wrong data in cells
+# import pandas as pd
+# data=pd.read_csv("data.csv")
+# data.loc[7,"Duration"]=45
+
+#dupliactes in dataframe
+import pandas as pd
+data=pd.read_csv("data.csv")
+print(data.duplicated()) #returns boolean values True for duplicate rows
+
+data.drop_duplicates(inplace=True)
+print(data.to_string()) #removes duplicate rows permanently
