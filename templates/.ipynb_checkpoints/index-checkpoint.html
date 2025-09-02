@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PneumoScan AI - Pneumonia Detection</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        header {
+            background: #1a2a6c;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+            color: #4fc3f7;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 30px;
+        }
+        
+        .upload-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .upload-area {
+            width: 100%;
+            height: 300px;
+            border: 3px dashed #1a2a6c;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-area:hover {
+            background: #f0f9ff;
+            border-color: #4fc3f7;
+        }
+        
+        .upload-area i {
+            font-size: 4rem;
+            color: #1a2a6c;
+            margin-bottom: 20px;
+        }
+        
+        .upload-text {
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .upload-btn {
+            background: #1a2a6c;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .upload-btn:hover {
+            background: #4fc3f7;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        #file-input {
+            display: none;
+        }
+        
+        .image-preview {
+            width: 100%;
+            max-height: 300px;
+            display: none;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .results-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .results-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .results-header {
+            font-size: 1.5rem;
+            color: #1a2a6c;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .probability-meter {
+            width: 100%;
+            height: 30px;
+            background: #eee;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .probability-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4fc3f7, #1a2a6c);
+            border-radius: 15px;
+            transition: width 1.5s ease-in-out;
+        }
+        
+        .probability-text {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #1a2a6c;
+            margin: 15px 0;
+        }
+        
+        .result-negative {
+            color: #4caf50;
+        }
+        
+        .result-positive {
+            color: #f44336;
+        }
+        
+        .result-message {
+            text-align: center;
+            font-size: 1.2rem;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .negative {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .positive {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .info-section {
+            background: #e3f2fd;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .info-header {
+            font-size: 1.3rem;
+            color: #1a2a6c;
+            margin-bottom: 15px;
+        }
+        
+        .info-content {
+            line-height: 1.6;
+        }
+        
+        .info-content ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        footer {
+            background: #1a2a6c;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-lungs-virus"></i>
+                <h1>PneumoScan AI</h1>
+            </div>
+            <p class="subtitle">Advanced Pneumonia Detection from Medical Imaging</p>
+        </header>
+        
+        <div class="content">
+            <div class="upload-section">
+                <div class="upload-area" id="upload-area">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p class="upload-text">Drag & drop your chest X-ray image here<br>or click to browse</p>
+                    <button class="upload-btn">Select Image</button>
+                    <input type="file" id="file-input" accept="image/*">
+                </div>
+                
+                <div class="image-preview" id="image-preview">
+                    <img id="preview-img" src="" alt="X-ray preview">
+                </div>
+                
+                <button class="upload-btn" id="analyze-btn" style="display: none;">
+                    <i class="fas fa-search"></i> Analyze Image
+                </button>
+            </div>
+            
+            <div class="results-section">
+                <div class="results-card">
+                    <h2 class="results-header">Analysis Results</h2>
+                    <div class="probability-meter">
+                        <div class="probability-fill" id="probability-fill"></div>
+                    </div>
+                    <div class="probability-text" id="probability-text">0%</div>
+                    <div class="result-message negative" id="result-message">
+                        Please upload a chest X-ray image to begin analysis.
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <h3 class="info-header">About Pneumonia</h3>
+                    <div class="info-content">
+                        <p>Pneumonia is an infection that inflames the air sacs in one or both lungs. The air sacs may fill with fluid or pus, causing cough with phlegm or pus, fever, chills, and difficulty breathing.</p>
+                        <p><strong>Common symptoms include:</strong></p>
+                        <ul>
+                            <li>Cough that may produce phlegm</li>
+                            <li>Fever, sweating, and chills</li>
+                            <li>Shortness of breath</li>
+                            <li>Chest pain</li>
+                        </ul>
+                        <p>Early detection through medical imaging like X-rays can significantly improve treatment outcomes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Disclaimer: This tool is for辅助 purposes only. Always consult a healthcare professional for medical diagnosis.</p>
+            <p>© 2023 PneumoScan AI | Powered by Deep Learning Technology</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('upload-area');
+            const fileInput = document.getElementById('file-input');
+            const imagePreview = document.getElementById('image-preview');
+            const previewImg = document.getElementById('preview-img');
+            const analyzeBtn = document.getElementById('analyze-btn');
+            const probabilityFill = document.getElementById('probability-fill');
+            const probabilityText = document.getElementById('probability-text');
+            const resultMessage = document.getElementById('result-message');
+            
+            // Upload area functionality
+            uploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.style.background = '#e3f2fd';
+                uploadArea.style.borderColor = '#4fc3f7';
+            });
+            
+            uploadArea.addEventListener('dragleave', function() {
+                uploadArea.style.background = '';
+                uploadArea.style.borderColor = '#1a2a6c';
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.style.background = '';
+                uploadArea.style.borderColor = '#1a2a6c';
+                
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFile(e.dataTransfer.files[0]);
+                }
+            });
+            
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length) {
+                    handleFile(fileInput.files[0]);
+                }
+            });
+            
+            function handleFile(file) {
+                if (!file.type.match('image.*')) {
+                    alert('Please upload an image file.');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    analyzeBtn.style.display = 'block';
+                    resultMessage.textContent = 'Click "Analyze Image" to process';
+                    resultMessage.className = 'result-message';
+                };
+                
+                reader.readAsDataURL(file);
+            }
+            
+            // Analyze button functionality
+            analyzeBtn.addEventListener('click', function() {
+                // Get the uploaded file
+                const file = fileInput.files[0];
+                
+                if (!file) {
+                    alert('Please upload an image first.');
+                    return;
+                }
+                
+                // Call the function to analyze the image
+                analyzeImage(file);
+            });
+            
+            // Function to send image to your API
+            async function analyzeImage(imageFile) {
+                // Show loading state
+                analyzeBtn.disabled = true;
+                analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+                
+                // Create form data to send the image
+                const formData = new FormData();
+                formData.append('image', imageFile);
+                
+                try {
+                    // API endpoint
+                    const response = await fetch('http://localhost:5000/predict', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'API request failed');
+                    }
+                    
+                    const result = await response.json();
+                    
+                    // Display results from your API
+                    displayResults(result);
+                } catch (error) {
+                    console.error('Error:', error);
+                    resultMessage.textContent = `Error: ${error.message}`;
+                    resultMessage.className = 'result-message positive';
+                } finally {
+                    // Reset button
+                    analyzeBtn.disabled = false;
+                    analyzeBtn.innerHTML = '<i class="fas fa-search"></i> Analyze Image';
+                }
+            }
+            
+            // Function to display results from your API
+            function displayResults(result) {
+                if (result.error) {
+                    resultMessage.textContent = `Error: ${result.error}`;
+                    resultMessage.className = 'result-message positive';
+                    return;
+                }
+                
+                const confidencePercent = result.confidence;
+                
+                probabilityFill.style.width = `${confidencePercent}%`;
+                probabilityText.textContent = `${confidencePercent}%`;
+                
+                if (result.prediction === 'PNEUMONIA') {
+                    probabilityText.className = 'probability-text result-positive';
+                    resultMessage.textContent = `Our AI detected signs of pneumonia with ${confidencePercent}% confidence. Please consult a healthcare professional.`;
+                    resultMessage.className = 'result-message positive';
+                } else {
+                    probabilityText.className = 'probability-text result-negative';
+                    resultMessage.textContent = `No signs of pneumonia detected with ${confidencePercent}% confidence.`;
+                    resultMessage.className = 'result-message negative';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+/* General Styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0f172a;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+/* Container */
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* Header */
+header h1 {
+    font-size: 28px;
+    color: #38bdf8;
+}
+header p {
+    color: #94a3b8;
+    font-size: 16px;
+}
+
+/* Model Info */
+.model-info {
+    background: #1e293b;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+}
+.model-info ul {
+    list-style: none;
+    padding: 0;
+}
+.model-info li {
+    margin: 8px 0;
+}
+
+/* Upload Section */
+.upload-section {
+    margin-top: 20px;
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 12px;
+}
+.upload-section input {
+    padding: 8px;
+    background: #0f172a;
+    color: #fff;
+    border: 1px solid #38bdf8;
+    border-radius: 6px;
+}
+.upload-section button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    background: #38bdf8;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: 0.3s;
+}
+.upload-section button:hover {
+    background: #0ea5e9;
+}
+
+/* Result Section */
+.result {
+    margin-top: 20px;
+    padding: 20px;
+    background: #1e293b;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+}
+.result img {
+    width: 250px;
+    margin: 10px 0;
+    border-radius: 8px;
+}
+
+/* Confidence Bar */
+.progress-bar {
+    background: #334155;
+    border-radius: 8px;
+    margin-top: 10px;
+    height: 20px;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+#confidenceBar {
+    background: #38bdf8;
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.5s;
+}
